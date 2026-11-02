@@ -1,0 +1,92 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main, stable]
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.10.2'
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked --group dev --group eval-test
+      - run: uv run --locked --group eval-test pytest -q
+      - name: Verify evaluator oracle checks do not skip
+        run: |
+          uv run --locked --group eval-test pytest -q tests/test_eval_graders.py tests/test_eval_grading_driver.py tests/test_eval_followup.py --junitxml="$RUNNER_TEMP/oracles.xml"
+          uv run --locked python - "$RUNNER_TEMP/oracles.xml" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          root = ET.parse(sys.argv[1]).getroot()
+          suites = [root] if root.tag == 'testsuite' else root.findall('testsuite')
+          assert sum(int(s.attrib['tests']) for s in suites) > 0
+          assert sum(int(s.attrib['skipped']) for s in suites) == 0, 'evaluator oracle checks must not skip'
+          PY
+      - run: uv run --locked python scripts/build_plugins.py --check
+      - name: Verify release metadata
+        env:
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          uv run --locked python - <<'PY'
+          import json, os, pathlib, tomllib
+          root = pathlib.Path.cwd()
+          version = json.loads((root / 'catalog.json').read_text())['version']
+          project = tomllib.loads((root / 'pyproject.toml').read_text())['project']
+          assert project['version'] == version
+          locked = tomllib.loads((root / 'uv.lock').read_text())['package']
+          assert next(p['version'] for p in locked if p['name'] == project['name']) == version
+          ref = os.environ['RELEASE_REF']
+          if ref.startswith('refs/tags/'):
+              assert ref == f'refs/tags/v{version}', 'Tag must match canonical catalog version'
+          PY
+
+  grader-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: '0.10.2'
+          python-version: '3.13'
+      - run: uv sync --locked --group dev --group eval-test
+      - name: Verify grader requirements match lock
+        run: |
+          uv export --locked --only-group eval-test --no-header --no-annotate --no-emit-project --output-file "$RUNNER_TEMP/requirements-grader.txt"
+          cmp evals/requirements-grader.txt "$RUNNER_TEMP/requirements-grader.txt"
+      - name: Build credential-free grader from pinned base
+        run: |
+          docker build --target grader \
+            --build-arg GRADER_BASE_IMAGE=public.ecr.aws/docker/library/python:3.13-slim-bookworm@sha256:281d39ff02e3b389401586134ff9e6572954687822a58055ec07a60ded4e0b7f \
+            -t agent-skills-grader:ci -f evals/Dockerfile evals/
+      - name: Verify real grader isolation and candidate outcomes
+        env:
+          AGENT_SKILLS_EVAL_IMAGE: agent-skills-grader:ci
+        run: |
+          uv run --locked --group eval-test pytest -q tests/test_eval_docker.py -k 'external_grading_rejects_baseline_and_accepts_candidate or grader_image_only_contains_nonroot_python_runtime' --junitxml="$RUNNER_TEMP/grader.xml"
+          uv run --locked python - "$RUNNER_TEMP/grader.xml" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          root = ET.parse(sys.argv[1]).getroot()
+          suites = [root] if root.tag == 'testsuite' else root.findall('testsuite')
+          assert sum(int(s.attrib['tests']) for s in suites) >= 2
+          assert sum(int(s.attrib['skipped']) for s in suites) == 0, 'grader integration checks must not skip'
+          PY

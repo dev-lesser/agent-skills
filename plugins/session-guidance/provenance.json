@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "bundle": "session-guidance",
+  "version": "0.2.0",
+  "sources": [],
+  "files": [],
+  "authored_files": [],
+  "supporting_resources": [
+    {
+      "local": "LICENSE",
+      "canonical_source": "LICENSE",
+      "source_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "payload_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    },
+    {
+      "local": "LICENSING.md",
+      "canonical_source": "LICENSING.md",
+      "source_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "payload_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    }
+  ],
+  "note": "upstream_sha256 is upstream; source_sha256 is the reviewed canonical local source; payload_sha256 is the transformed installed file. No hash proves runtime invocation or adherence."
+}

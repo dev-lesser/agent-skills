@@ -1,0 +1,8 @@
+{
+  "name": "api-contracts",
+  "version": "0.2.0",
+  "description": "API and wire contract design and review",
+  "author": {
+    "name": "Jongmoon Choi"
+  }
+}

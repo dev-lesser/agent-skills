@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "bundle": "fastapi",
+  "version": "0.2.0",
+  "sources": [],
+  "files": [],
+  "authored_files": [
+    {
+      "name": "fastapi-backend",
+      "origin": "Original the prior project framework-boundary guidance with official documentation links; not an upstream documentation or skill import.",
+      "local": "skills/fastapi-backend/SKILL.md",
+      "canonical_source": "source/skills/fastapi-backend/SKILL.md",
+      "source_sha256": "b73317f72eaa402ad65bf45e6d4dba0510a0e1bbc2582780e58c24d874414943",
+      "payload_sha256": "9ba2a5928ded61d870c969adc1a8126697cf7c4f26541efd36634f268cdc48c8",
+      "transformation": "Explicit portable link rewriting only; source bytes remain separately recorded."
+    }
+  ],
+  "supporting_resources": [
+    {
+      "local": "LICENSE",
+      "canonical_source": "LICENSE",
+      "source_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "payload_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    },
+    {
+      "local": "LICENSING.md",
+      "canonical_source": "LICENSING.md",
+      "source_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "payload_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    }
+  ],
+  "note": "upstream_sha256 is upstream; source_sha256 is the reviewed canonical local source; payload_sha256 is the transformed installed file. No hash proves runtime invocation or adherence."
+}

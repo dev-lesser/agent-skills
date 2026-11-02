@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "algorithm": "sha256",
+  "files": {
+    ".claude-plugin/plugin.json": "d0f5c208cf6106ee0fe74e1766440bc2a64673847a1a8ef4318829ad6c05742f",
+    "DEPENDENCIES.md": "d1206a0651c58b49869c1ac0d0b3c96cbd03c53fb90ad1869f5429f889d6bf29",
+    "LICENSE": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+    "LICENSING.md": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+    "THIRD-PARTY-NOTICES.md": "2dc7029649edf5afda5bb8d7e6af64322f028b35ae850d1176d70d3fe21fed0f",
+    "hooks/hooks.json": "c45209c413df92692681d6c333bed209e4684c442f3bf2e4ecbf35541fd2598c",
+    "hooks/session-start.sh": "3ffb7d401bc7d92285dc9a0966d39b30515a955fe9eb1356bbf1b86dcdd2b030",
+    "plugin.json": "2df5d3a4c0bbad83f092cfb46753f91d8b32eb375775fe78053c03432b1a622c",
+    "provenance.json": "9e74969d295fe6dce13cf41fcb32239fd793e046377ca2a077ba198a0601e71a"
+  }
+}

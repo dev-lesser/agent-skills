@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "algorithm": "sha256",
+  "files": {
+    ".claude-plugin/plugin.json": "9f0a9ea61a323deb95dc7473a425002651388637fa75e0cb40615d26c0bec2d6",
+    "DEPENDENCIES.md": "bc8eee728d55b638b3ee5fdf94b519c8a9ceb5ce588ba240ff5c453fe77a2ed0",
+    "LICENSE": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+    "LICENSING.md": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+    "THIRD-PARTY-NOTICES.md": "b1b8e4559b999476832b92c76b8426e6dddbd43d8b065d242c7cef82feaacd0a",
+    "plugin.json": "c119594a7a9a640f75cc56a2c5190a5c30d8aee2a6396f8670fb335b3cb9afdd",
+    "provenance.json": "aa71fb4a163e284e8e0c4082e31d04427056812e3a41569de1a6b16c23dd88ec",
+    "skills/fastapi-backend/SKILL.md": "9ba2a5928ded61d870c969adc1a8126697cf7c4f26541efd36634f268cdc48c8"
+  }
+}

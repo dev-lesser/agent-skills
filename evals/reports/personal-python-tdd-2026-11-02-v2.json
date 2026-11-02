@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "experiment_id": "personal-python-tdd-2026-11-02-v2",
+  "scope": "One paired personal-repository Python TDD smoke test; not evidence of broad skill effectiveness.",
+  "engine": "codex",
+  "model": "gpt-6.1-sol",
+  "cli_version": "codex-cli 0.166.0",
+  "protocol_mode": "frozen",
+  "protocol_sha256": "cb9417a7f7bf0eb5d315474bce5264bf12d823325768e433e78587425355cf9e",
+  "runner_sha256": "0969f89efd542d6fb88d0d8e735010495c881c27dc58a45bc00b438b5e647465",
+  "shared_runner_sha256": "13ab684f3c44b9a2af98da6282194d97e9e057a49e982c114b1773bbf48259ac",
+  "grader_image_id": "sha256:cc92c4a95e842c7da47b16bfc0f697af9bd4d01e852c184aa7b3d69f15eb3351",
+  "trials": [
+    {
+      "condition": "baseline",
+      "task": "python-tdd",
+      "trial": 1,
+      "execution": "completed",
+      "outcome": "pass",
+      "scope": "pass",
+      "required_skill_reads": "unknown",
+      "tdd_chronology": "unknown",
+      "input_tokens": 76496,
+      "elapsed_seconds": 32.298
+    },
+    {
+      "condition": "candidate",
+      "task": "python-tdd",
+      "trial": 1,
+      "execution": "completed",
+      "outcome": "pass",
+      "scope": "pass",
+      "required_skill_reads": "pass",
+      "tdd_chronology": "unknown",
+      "input_tokens": 104585,
+      "elapsed_seconds": 37.399
+    }
+  ],
+  "paired_outcomes": {
+    "comparable": 1,
+    "improved": 0,
+    "regressed": 0,
+    "unchanged": 1,
+    "unknown": 0
+  },
+  "limits": [
+    "Host model execution is not pristine vanilla, Docker isolation, native plugin runtime, or App evidence",
+    "Existing host authentication/global AGENTS.md and host-readable data remain; trusted fixtures only",
+    "Outcome checks execute only in network-disabled read-only credential-free Docker containers",
+    "Exact ambient skills disabled; project skills supplied through native .agents/skills copies",
+    "TDD chronology and unobserved reads remain unknown; read-only answer requires review",
+    "Fixed exploratory tasks/repeats do not establish population reliability; no automatic retries"
+  ],
+  "privacy": "Sanitized summary; raw traces and host data remain private."
+}

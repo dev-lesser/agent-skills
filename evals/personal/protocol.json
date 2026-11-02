@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "id": "personal-python-tdd-2026-11-02-v3",
+  "status": "frozen",
+  "description": "One paired Python TDD smoke evaluation of personal 0.2.0 payloads on the recorded host and local grader image; not a population or product-quality benchmark.",
+  "model": "gpt-6.1-sol",
+  "cli_version": "codex-cli 0.166.0",
+  "trials_per_task_per_condition": 1,
+  "timeout_seconds": 240,
+  "max_concurrent_pairs": 1,
+  "tasks_dir": "evals/tasks",
+  "tasks": [
+    "python-tdd"
+  ],
+  "baseline": "vanilla",
+  "grader_image_id": "sha256:cc92c4a95e842c7da47b16bfc0f697af9bd4d01e852c184aa7b3d69f15eb3351",
+  "candidate_tree_sha256": "22053fe5f22c920424d495e5ead9bfff7d8d9d7119496d8fb3776d8b42602d63",
+  "frozen_inputs_sha256": {
+    ".agents/plugins/marketplace.json": "8647e2cb46b15ebc2e69978ec5cdd3af87d8d4d9f0f8ef89b81bf5bb9c24c940",
+    ".claude-plugin/marketplace.json": "eb642784e2b8e5660a4ca90d1b751c7a5b098843756570aaba03825b494c52f3",
+    "LICENSE": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+    "LICENSING.md": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+    "catalog.json": "3420e0d1e42b93d465a18eb6b4682fa6a1421acede31f06704b0d57ae11e47ea",
+    "evals/Dockerfile": "7a69105550aadac969b8d98aa74e0708f9da495a04999f82ad48333e3fea14fb",
+    "evals/checks/points.py": "da9fc5239a1f2391ebd40855648c73c04e6d96d7d609444d8ed934a5f3987e96",
+    "evals/drive_check.py": "8b07a2040286e3cb281c60eee5a59bb7316156f56a6924027626a24dab257692",
+    "evals/fixtures/python-tdd/points.py": "c395e4df3798d0ea5c4bb0b4f6c44c636394ed71b76340ec1a4334d4c2dda1da",
+    "evals/graders.py": "8fd82bf4a2ca6f851813343d72be0a74eefd53df4a0bf81d179d8638fed30939",
+    "evals/requirements-grader.txt": "b2d07795d15c2707efc1ba3561e625776534d5c771da42fb3e3272180d171b6b",
+    "evals/tasks/python-tdd.json": "445c3b81bd2db6f59cfe53f117cbf5c1510c36e412cc40d3c69b9ed4ae1cacc7",
+    "pyproject.toml": "e0b643d5b29e1ca4324af61bbe76e11421b6b2f16c5057725c8ca90caa490244",
+    "scripts/build_plugins.py": "7a098c0fc3cf20e841568914b8a5b431aec5991ceae002afe9a3f589acce9426",
+    "scripts/run_evals.py": "13ab684f3c44b9a2af98da6282194d97e9e057a49e982c114b1773bbf48259ac",
+    "scripts/run_host_evals.py": "0969f89efd542d6fb88d0d8e735010495c881c27dc58a45bc00b438b5e647465",
+    "uv.lock": "3c60b92c4dc0387f999458fe34cea30bc44db984d1815b9b6fa769a78f552df9"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "personal-python-tdd-2026-11-02-v2",
+  "status": "frozen",
+  "description": "One paired Python TDD smoke evaluation on the recorded macOS arm64 host and local grader image; not a population or product-quality benchmark.",
+  "model": "gpt-6.1-sol",
+  "cli_version": "codex-cli 0.166.0",
+  "trials_per_task_per_condition": 1,
+  "timeout_seconds": 240,
+  "max_concurrent_pairs": 1,
+  "tasks_dir": "evals/tasks",
+  "tasks": [
+    "python-tdd"
+  ],
+  "baseline": "vanilla",
+  "grader_image_id": "sha256:cc92c4a95e842c7da47b16bfc0f697af9bd4d01e852c184aa7b3d69f15eb3351",
+  "candidate_tree_sha256": "0210eadf1877d1386a346f0618c6c4f3eee7398388145681c34d37caecb8df49",
+  "frozen_inputs_sha256": {
+    ".agents/plugins/marketplace.json": "8647e2cb46b15ebc2e69978ec5cdd3af87d8d4d9f0f8ef89b81bf5bb9c24c940",
+    ".claude-plugin/marketplace.json": "eb642784e2b8e5660a4ca90d1b751c7a5b098843756570aaba03825b494c52f3",
+    "catalog.json": "e8aaf0590aa02511bdfc816bd65ae215a60b37efc00642ec447ed5a715b7086e",
+    "evals/checks/points.py": "da9fc5239a1f2391ebd40855648c73c04e6d96d7d609444d8ed934a5f3987e96",
+    "evals/drive_check.py": "8b07a2040286e3cb281c60eee5a59bb7316156f56a6924027626a24dab257692",
+    "evals/fixtures/python-tdd/points.py": "c395e4df3798d0ea5c4bb0b4f6c44c636394ed71b76340ec1a4334d4c2dda1da",
+    "evals/graders.py": "8fd82bf4a2ca6f851813343d72be0a74eefd53df4a0bf81d179d8638fed30939",
+    "evals/tasks/python-tdd.json": "445c3b81bd2db6f59cfe53f117cbf5c1510c36e412cc40d3c69b9ed4ae1cacc7",
+    "scripts/run_evals.py": "13ab684f3c44b9a2af98da6282194d97e9e057a49e982c114b1773bbf48259ac",
+    "scripts/run_host_evals.py": "0969f89efd542d6fb88d0d8e735010495c881c27dc58a45bc00b438b5e647465"
+  }
+}

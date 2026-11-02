@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "bundle": "typescript",
+  "version": "0.2.0",
+  "sources": [],
+  "files": [],
+  "authored_files": [
+    {
+      "name": "typescript-project-structure",
+      "origin": "Original the prior project procedure, authored for the requested scoped skeleton; not an upstream import.",
+      "local": "skills/typescript-project-structure/SKILL.md",
+      "canonical_source": "source/skills/typescript-project-structure/SKILL.md",
+      "source_sha256": "9f650da338b13fc4b42c59c9e5e5f9174c1ece6f454c55d8370a0d64252a55b9",
+      "payload_sha256": "630bcc902023a59df1f11e6627dc4478c41ca23c83dad577191721b9ccb7bd94",
+      "transformation": "Explicit portable link rewriting only; source bytes remain separately recorded."
+    }
+  ],
+  "supporting_resources": [
+    {
+      "local": "LICENSE",
+      "canonical_source": "LICENSE",
+      "source_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "payload_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    },
+    {
+      "local": "LICENSING.md",
+      "canonical_source": "LICENSING.md",
+      "source_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "payload_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    },
+    {
+      "local": "references/architecture.md",
+      "canonical_source": "source/references/architecture.md",
+      "source_sha256": "ba6f0d7555a2008e7a54659d6f049ddb40d48640f192826556bbe2abfd326fa4",
+      "payload_sha256": "ba6f0d7555a2008e7a54659d6f049ddb40d48640f192826556bbe2abfd326fa4",
+      "transformation": "Explicit portable link rewriting only; source bytes remain separately recorded."
+    },
+    {
+      "local": "references/development.md",
+      "canonical_source": "source/references/development.md",
+      "source_sha256": "1ede06ef8c892a3d480a81c69460411a775704e497bb6a12aa1d35cf6da1b4c9",
+      "payload_sha256": "26f5a5143a598da2c90d868e4afa4cc6d71c4e217e2021d7f2f952ecf4a42b15",
+      "transformation": "Explicit portable link rewriting only; source bytes remain separately recorded."
+    },
+    {
+      "local": "references/engineering.md",
+      "canonical_source": "source/references/engineering.md",
+      "source_sha256": "1b64b8c56bb9599251935126d146c51029545bf514446a602737c78e0bd2a0fd",
+      "payload_sha256": "29dac46aadb2ee34764ff932297f672878b99186abb4f34fec4d360355d65cfd",
+      "transformation": "Explicit portable link rewriting only; source bytes remain separately recorded."
+    }
+  ],
+  "note": "upstream_sha256 is upstream; source_sha256 is the reviewed canonical local source; payload_sha256 is the transformed installed file. No hash proves runtime invocation or adherence."
+}

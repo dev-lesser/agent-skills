@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "bundle": "litestar",
+  "version": "0.2.0",
+  "sources": [],
+  "files": [],
+  "authored_files": [
+    {
+      "name": "litestar-backend",
+      "origin": "Original the prior project Litestar development/review procedure linked to official versioned documentation; no upstream skill prose or ecosystem policy imported.",
+      "local": "skills/litestar-backend/SKILL.md",
+      "canonical_source": "source/skills/litestar-backend/SKILL.md",
+      "source_sha256": "f8baccec379b9556e558a94c97cd9e787ebed0bc57bac424aa6f3599a2a1d1e5",
+      "payload_sha256": "cc757d4f4800b47595c38d1cefc3d5c689af6a702460055f540d5c910f4f9d68",
+      "transformation": "Explicit portable link rewriting only; source bytes remain separately recorded."
+    }
+  ],
+  "supporting_resources": [
+    {
+      "local": "LICENSE",
+      "canonical_source": "LICENSE",
+      "source_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "payload_sha256": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    },
+    {
+      "local": "LICENSING.md",
+      "canonical_source": "LICENSING.md",
+      "source_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "payload_sha256": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+      "transformation": "Verbatim; scope is defined in LICENSING.md."
+    }
+  ],
+  "note": "upstream_sha256 is upstream; source_sha256 is the reviewed canonical local source; payload_sha256 is the transformed installed file. No hash proves runtime invocation or adherence."
+}
