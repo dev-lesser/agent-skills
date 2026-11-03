@@ -9,11 +9,13 @@ and CI results separately; this document does not claim a release was made.
 
 ## One source, one release version
 
-1. Edit canonical procedures/resources or roles, not generated `plugins/`. Preserve upstream revisions/licenses and
-   separately record reviewed local changes. Keep stable plugin identities after first publication.
+1. Edit canonical procedures/resources in their owning `plugins/<bundle>/` paths, not generated destinations. Root
+   `LICENSE` and `LICENSING.md` remain the legal-policy inputs. Preserve upstream revisions/licenses and separately
+   review changed local hashes in `provenance/skill-sources.json`; never auto-approve them. Keep stable plugin identities
+   after first publication.
 2. Update `catalog.json` version and matching `pyproject.toml`; run `uv lock` **without** `--upgrade` and review pins.
-3. Rebuild plugins, run locked pytest and builder `--check`, then review artifact/provenance/license diffs. Release
-   notes name changed triggers, compatibility, hook changes, observed checks and omitted host/session evidence.
+3. Prepare generated plugin files, run locked pytest and builder `--check`, then review artifact/provenance/license
+   diffs. Release notes name changed triggers, compatibility, hook changes, observed checks and omitted host/session evidence.
 4. With release authorization, commit and tag the reviewed commit as immutable `vX.Y.Z`. Validation rejects a
    tag that differs from the canonical catalog/package version. Do not move old release tags.
 5. If an approved moving **`stable`** channel is maintained, promote only a validated release commit to it; `main` is
@@ -22,6 +24,13 @@ and CI results separately; this document does not claim a release was made.
 
 All bundle manifests use the one catalog version; Claude marketplace entries do not repeat it. Changes to public
 plugin identities require coordinated consumer migration and review.
+
+Preparation validates and stages the complete expected output before updating only changed generated files.
+Canonical inputs remain untouched. A caught replacement failure restores prior generated files; if restoration fails,
+the error identifies retained recovery files. Preserve that evidence and inspect the reported paths before retrying.
+This rollback is not crash-atomic publication or a consumer install transaction. Never replace the whole `plugins/`
+tree as recovery: it contains canonical inputs. Unknown files and managed symlinks fail preflight rather than being
+deleted or silently adopted. Host installation consumes prepared payloads, not an on-install Python build.
 
 ## Host updates
 

@@ -1,9 +1,10 @@
-> Historical upstream review: this personal adaptation subsequently excludes robotics and firmware skills.
+> Historical upstream review with a separate current UI/UX import decision below. This personal adaptation excludes robotics and firmware skills.
 
 # Upstream candidate review
 
-This review selects reusable decision procedures, not the largest possible skill count. The canonical catalog contains
-41 procedures after preserving the existing 39 and adding domain modeling and Python type safety. Project-specific
+This review selects reusable decision procedures, not the largest possible skill count. The historical upstream inventory
+contained 41 procedures after adding domain modeling and Python type safety. The current personal catalog contains
+39 procedures, including UI UX Pro Max; the historical counts below are not current catalog assertions. Project-specific
 SDK/protocol commands, authority and build environments remain with their consuming repositories.
 
 ## Sources and review depth
@@ -49,8 +50,24 @@ React performance and composition; the existing evaluations do not yet cover UI 
 | [Microsoft Playwright CLI skill](https://github.com/microsoft/playwright-cli/tree/c2d8d199459d1480491bebf0a6b3587136b673fa) | Defer | Useful optional browser tooling, but it needs a CLI/browser runtime. A shared skill does not authorize installation, destructive browser actions or application execution. |
 | Existing Anthropic frontend-design, Impeccable and Vercel UI skills | Retain | They already cover design direction, UI critique/polish, interface review, React performance and composition; Impeccable here is an instruction-only adaptation, not its upstream runtime. |
 
-No new skill or runtime was imported from this comparison. Reconsider a candidate only for a demonstrated gap with
-its immutable source, complete resources/licenses, compatible target hosts and independently evaluated outcomes.
+No new skill or runtime was imported from that historical comparison. The later scoped import decision below
+supersedes the UI UX Pro Max deferral for its selected adapted payload only; it does not retroactively validate the
+older candidate revision or establish model/UI effectiveness.
+
+### Current scoped UI UX Pro Max import
+
+The current addition pins [UI UX Pro Max at `713eef51b04efc98d6fa565323b495f7c9c89fd4`](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/713eef51b04efc98d6fa565323b495f7c9c89fd4)
+with its MIT evidence, complete selected search data, four standard-library runtime modules and two text references.
+The adapted skill adds focused local design search to the existing five procedures, making six React UI skills.
+Installers, hooks, host adapters and browser tooling remain excluded.
+
+Use already available Python 3 only when execution is authorized; search is read-only by default and missing required
+data is an error. A focused polish request does not authorize a replacement design system. Preserve the consuming
+project's design/behavior and framework version; React 19 data does not establish React 18 compatibility. Persist
+only a requested design record at a reviewed destination, with explicit overwrite authority for existing records.
+Managed-path guards are preflight, not a concurrent-write sandbox. Source/hash/package and runtime regression checks
+have their own evidence layers; neither search results nor static routing text proves fresh-session invocation,
+rendered quality or interaction correctness. See [frontend workflows](frontend-workflows.md).
 
 ## Packaging and acceptance boundary
 

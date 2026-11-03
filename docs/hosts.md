@@ -41,8 +41,12 @@ claude plugin install common@dev-lesser-agent-skills --scope project
 claude plugin install python@dev-lesser-agent-skills --scope project
 ```
 
-The commands do not install product dependencies, initialize Git, or approve trust. Review and activate each host's
-configuration separately; installation, fresh-session discovery, invocation and observed behavior are distinct.
+The commands consume prepared payloads; they do not run this provider's Python builder, install product dependencies,
+initialize Git, or approve trust. Review and activate each host's configuration separately; installation, fresh-session discovery, invocation and observed behavior are distinct.
+
+Most skills are instructions/resources only. UI UX Pro Max's optional local data search needs an already available
+Python 3 interpreter and the standard library; it does not authorize a runtime install, persistence, browser or
+application execution. See [frontend workflows](frontend-workflows.md).
 
 ## Git source
 
@@ -85,8 +89,8 @@ through `/hooks` where supported and respect hook-disable policy. Never override
 
 Each package has portable root `plugin.json` for Codex and `.claude-plugin/plugin.json` for Claude. `.codex-plugin` is
 an optional compatibility location, not a consumer directory for selected skills.
-Common's Claude-native `agents/*.md` derive from `source/agents/*.toml`. Matching `exports/codex/agents/*.toml` are optional
-explicit provisioning artifacts: Codex 0.160.0 and the inspected bundled 0.162.0-alpha.17.2 do not load agents from plugins.
+Common's generated Claude-native `agents/*.md` derive from canonical `plugins/common/exports/codex/agents/*.toml`.
+Those TOMLs are optional explicit provisioning artifacts: Codex 0.160.0 and the inspected bundled 0.162.0-alpha.17.2 do not load agents from plugins.
 Use built-in Codex agents by default; custom roles require separate native `.codex/agents` provisioning. A skill's
 `agents/openai.yaml` is interface metadata, not custom-agent registration.
 

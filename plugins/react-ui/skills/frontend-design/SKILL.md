@@ -6,6 +6,13 @@ license: Complete terms in LICENSE.txt
 
 # Frontend Design
 
+> Modified for Dev Lesser Agent Skills: added conditional UI UX Pro Max routing and safeguards for the
+> consuming project's existing design, content and behavior. The upstream procedure is otherwise retained.
+
+For visual creation, redesign or polish, also consult [UI UX Pro Max](../ui-ux-pro-max/SKILL.md) for the
+specific style, layout, typography, color or interaction concern. Keep its search guidance within the requested
+scope; it does not authorize replacing an established design system or changing product behavior.
+
 Approach this as the design lead at a design studio known for giving every client a distinct visual identity that is not mistaken for anyone else's. This client has already rejected proposals that felt cliché or templated, and is paying for a distinctive point of view: make deliberate, opinionated choices about palette, typography, and layout that are specific to this brief, and take aesthetic risk if justified.
 
 ## Ground your designs in the subject matter

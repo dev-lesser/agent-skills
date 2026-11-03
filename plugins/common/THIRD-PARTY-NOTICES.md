@@ -4,6 +4,7 @@ Selected imported sources retain their licenses and immutable revisions in `prov
 
 - addy-deprecation-and-migration: https://github.com/addyosmani/agent-skills at `aeac41d4d005999432bb7312f7ff06383a91d59d`; license evidence `skills/deprecation-and-migration/references/addy-LICENSE.md`.
 - addyosmani: https://github.com/addyosmani/agent-skills.git at `aeac41d4d005999432bb7312f7ff06383a91d59d`; license evidence `licenses/addyosmani-LICENSE`.
+- jeffallan: https://github.com/Jeffallan/claude-skills.git at `02b05028ba6c93f7aed45314b15c0dd5abead9d6`; license evidence `licenses/jeffallan-LICENSE`.
 - mattpocock: https://github.com/mattpocock/skills.git at `5beb35b040e3de97e54fa9e386d7e42d15c295c2`; license evidence `licenses/mattpocock-LICENSE`.
 - oh-my-codex: https://github.com/Yeachan-Heo/oh-my-codex.git at `1dcf51359f3caeeebfed0bcbeea867ff0838d533`; license evidence `licenses/oh-my-codex-LICENSE`.
 - openai: https://github.com/openai/openai-agents-python.git at `0dc4cf152bff1f50bdc0e41f28808563406545b2`; license evidence `licenses/openai-LICENSE`.

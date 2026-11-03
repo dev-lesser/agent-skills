@@ -2,7 +2,8 @@
 
 # Opt-in agent behavior evaluations
 
-These evaluations belong to **agent-skills**. Python is a maintainer tool, not a required language or runtime for skill consumers.
+These evaluations belong to **agent-skills**. Python runs the maintainer harness, not consumer installation. Most
+skills need no Python; optional UI UX Pro Max data search uses an existing Python 3 interpreter.
 
 | Location | Purpose | Model calls? |
 | --- | --- | --- |
@@ -22,7 +23,8 @@ These evaluations belong to **agent-skills**. Python is a maintainer tool, not a
 - `readonly-analysis`: diagnosis with changes/commands excluded and complete input supplied in the prompt.
 
 Tasks declare selected bundles, canonical `bundle:skill` IDs, runtime modules, allowed file changes and named checks.
-The negative control deliberately includes irrelevant bundles. These six tasks do not cover all 38 skills. Checkers stay outside the agent's writable workspace.
+The negative control deliberately includes irrelevant bundles. These six tasks do not cover all 39 current skills or
+establish UI UX Pro Max effectiveness. Checkers stay outside the agent's writable workspace.
 
 ## Default: existing-login model, isolated grader
 
@@ -66,7 +68,7 @@ Archived upstream protocols and reports are historical evidence, not valid froze
 The historical [personal v2 protocol](../evals/personal/protocol-v2.json) and [smoke report](../evals/reports/personal-python-tdd-2026-11-02-v2.json) record one completed pair before the 0.2.0 release payload: both conditions passed the independent outcome check; the candidate had an observed required skill read. TDD chronology remained unknown. One pair does not establish improvement, reliability, or overall skill quality. Raw traces remain private.
 
 Both arms receive identical task prompts, model, medium reasoning, initial fixture and wall-time budget. Candidate
-copies complete generated bundle snapshots to `.agents/skills/<bundle>/`, preserving resources/references and
+copies complete prepared bundle snapshots to `.agents/skills/<bundle>/`, preserving resources/references and
 namespaces for native project-local loading. There is no candidate-only “use this skill” prompt. `vanilla` supplies no
 project skills; a reviewed prior checkout can replace it for version comparisons. Evaluated payloads are actual
 `plugins/` bytes, not unbuilt source edits. Do not overwrite global plugin caches or user-registered sources.
