@@ -29,21 +29,50 @@ def files(root):
     return {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
 
 
+def review_hash(root, relative):
+    ledger = root / "provenance/skill-sources.json"
+    manifest = json.loads(ledger.read_text())
+    record = next(item for item in builder().canonical_records(manifest) if item["local"] == relative)
+    record["sha256"] = hashlib.sha256((root / relative).read_bytes()).hexdigest()
+    ledger.write_text(json.dumps(manifest))
+
+
 @pytest.fixture
 def source_repo(tmp_path):
     source = tmp_path / "source-repo"
-    shutil.copytree(ROOT / "source", source / "source")
-    shutil.copytree(ROOT / "hooks", source / "hooks")
+    shutil.copytree(ROOT / "plugins", source / "plugins")
+    shutil.copytree(ROOT / "provenance", source / "provenance")
     shutil.copy(ROOT / "catalog.json", source / "catalog.json")
     for path in ("LICENSE", "LICENSING.md"):
         shutil.copy(ROOT / path, source / path)
     return source
 
 
+def test_preparation_preserves_edited_canonical_skill(source_repo):
+    path = source_repo / "plugins/common/skills/codebase-design/SKILL.md"
+    contents = path.read_bytes() + b"\nReviewed canonical edit.\n"
+    path.write_bytes(contents)
+    with pytest.raises(ValueError, match="Source hash mismatch"):
+        builder().build(source_repo, source_repo)
+    assert path.read_bytes() == contents
+
+
+@pytest.mark.parametrize("relative", ["plugins/common/skills/unknown/SKILL.md", "plugins/unknown/keep.txt"])
+def test_preparation_rejects_unknown_files_without_deletion(source_repo, relative):
+    path = source_repo / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("Unregistered local work\n")
+    before = files(source_repo)
+    with pytest.raises(ValueError):
+        builder().build(source_repo, source_repo)
+    assert files(source_repo) == before
+
+
 def test_bundle_includes_scoped_original_license_and_provenance(tmp_path, source_repo):
     original = {"LICENSE": b"Sample license\n", "LICENSING.md": b"# Scope\n\nOriginal material only.\n"}
     for path, contents in original.items():
         (source_repo / path).write_bytes(contents)
+        review_hash(source_repo, path)
     output = tmp_path / "output"
     builder().build(source_repo, output)
     for plugin in (output / "plugins").iterdir():
@@ -74,10 +103,10 @@ def test_missing_original_license_input_is_rejected_without_output_changes(tmp_p
 
 
 def add_reviewed_markdown(source, text):
-    relative = "skills/nextjs-app-router/portability.md"
-    path = source / "source" / relative
+    relative = "plugins/nextjs/skills/nextjs-app-router/portability.md"
+    path = source / relative
     path.write_text(text)
-    manifest_path = source / "source/skill-sources.json"
+    manifest_path = source / "provenance/skill-sources.json"
     manifest = json.loads(manifest_path.read_text())
     authored = next(item for item in manifest["authored_skills"] if item["name"] == "nextjs-app-router")
     authored["files"].append({"local": relative, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
@@ -150,7 +179,7 @@ def test_semantic_prerelease_and_build_versions_reach_generated_manifests(tmp_pa
 
 def test_rest_api_missing_user_emits_structured_error_details():
     """Exercise the real route body, not FastAPI routing or Pydantic validation."""
-    path = ROOT / "source/skills/api-design-principles/assets/rest-api-template.py"
+    path = ROOT / "plugins/api-contracts/skills/api-design-principles/assets/rest-api-template.py"
     module = ast.parse(path.read_text())
     route = next(node for node in module.body if isinstance(node, ast.AsyncFunctionDef) and node.name == "get_user")
     # Remove only import-time FastAPI decorator/default wiring; keep the route body intact.
@@ -182,9 +211,9 @@ def test_catalog_has_exact_nonoverlapping_owners():
     assert next(p["version"] for p in locked if p["name"] == project["name"]) == data["version"]
     assert len(data["plugins"]) == 11
     names = [s for p in data["plugins"] for s in p["skills"]]
-    assert len(names) == len(set(names)) == 38
+    assert len(names) == len(set(names)) == 39
     assert "project-bootstrap" not in names
-    assert set(names) == {p.name for p in (ROOT / "source/skills").iterdir()}
+    assert set(names) == {p.parent.name for p in (ROOT / "plugins").glob("*/skills/*/SKILL.md")}
     hook = next(p for p in data["plugins"] if p["id"] == "session-guidance")
     assert hook["optional"] and not hook["skills"]
 
@@ -198,13 +227,15 @@ def test_personal_catalog_excludes_robotics_and_firmware_bundles():
     assert not (ROOT / "plugins/cpp-firmware").exists()
 
 
-def test_canonical_source_layout_is_flat():
-    source = ROOT / "source"
-    assert (source / "skills").is_dir()
-    assert (source / "references").is_dir()
-    assert (source / "licenses").is_dir()
-    assert (source / "skill-sources.json").is_file()
-    assert not (source / "library").exists()
+def test_canonical_source_layout_is_plugin_owned():
+    assert not (ROOT / "source").exists()
+    assert not (ROOT / "hooks").exists()
+    assert (ROOT / "provenance/skill-sources.json").is_file()
+    module = builder()
+    _, _, manifest = module.load_source(ROOT)
+    assert manifest["version"] == 2
+    assert all(record["local"].startswith("plugins/") or record["local"] in {"LICENSE", "LICENSING.md"}
+               for record in module.canonical_records(manifest))
 
 
 def test_authored_spec_guidance_does_not_impose_consumer_paths():
@@ -256,11 +287,10 @@ def test_shared_reference_examples_do_not_impose_template_paths():
 
 def test_flat_source_retains_selected_unmodified_upstream_files():
     """Unmodified upstream examples remain traceable after moving their containing tree."""
-    source = ROOT / "source"
-    manifest = json.loads((source / "skill-sources.json").read_text())
-    for local in ("skills/frontend-design/SKILL.md",
-                  "skills/domain-modeling/ADR-FORMAT.md",
-                  "skills/domain-modeling/GLOSSARY-FORMAT.md"):
+    source = ROOT
+    manifest = json.loads((source / "provenance/skill-sources.json").read_text())
+    for local in ("plugins/common/skills/domain-modeling/ADR-FORMAT.md",
+                  "plugins/common/skills/domain-modeling/GLOSSARY-FORMAT.md"):
         record = next(item for item in manifest["files"] if item["local"] == local)
         assert hashlib.sha256((source / local).read_bytes()).hexdigest() == record["upstream_sha256"]
 
@@ -304,10 +334,10 @@ def test_generated_skill_inventory_and_license_coverage(tmp_path):
         assert sorted(p.parent.name for p in plugin.glob("skills/*/SKILL.md")) == sorted(entry["skills"])
         provenance = json.loads((plugin / "provenance.json").read_text())
         selected_source_ids = {source["id"] for source in provenance["sources"]}
-        canonical = json.loads((ROOT / "source/skill-sources.json").read_text())
+        canonical = json.loads((ROOT / "provenance/skill-sources.json").read_text())
         for record in canonical["files"]:
-            if record["source_id"] in selected_source_ids and record["local"].startswith("licenses/"):
-                assert (plugin / record["local"]).read_bytes() == (ROOT / "source" / record["local"]).read_bytes()
+            if record["source_id"] in selected_source_ids and "/licenses/" in record["local"]:
+                assert (plugin / Path(*Path(record["local"]).parts[2:])).read_bytes() == (ROOT / record["local"]).read_bytes()
         for source in provenance["sources"]:
             assert source["revision"]
             assert (plugin / source["license"]).is_file()
@@ -344,12 +374,12 @@ def test_current_outputs_match_builder():
 def test_invalid_source_rejected_without_partial_output(tmp_path, failure):
     source = tmp_path / "source-repo"
     source.mkdir()
-    shutil.copytree(ROOT / "source", source / "source")
-    shutil.copytree(ROOT / "hooks", source / "hooks")
+    shutil.copytree(ROOT / "plugins", source / "plugins")
+    shutil.copytree(ROOT / "provenance", source / "provenance")
     shutil.copy(ROOT / "catalog.json", source / "catalog.json")
     for path in ("LICENSE", "LICENSING.md"):
         shutil.copy(ROOT / path, source / path)
-    skill = source / "source/skills/nextjs-app-router"
+    skill = source / "plugins/nextjs/skills/nextjs-app-router"
     if failure == "unknown-link":
         (skill / "new.md").write_text("[undeclared](../../../private-guide.md)\n")
     elif failure == "missing-resource":
@@ -363,20 +393,20 @@ def test_invalid_source_rejected_without_partial_output(tmp_path, failure):
     elif failure == "unrecorded-source":
         (skill / "new.md").write_text("Unreviewed resource.\n")
     elif failure == "escaping-hook-symlink":
-        hook = source / "hooks/session-start.sh"
+        hook = source / "plugins/session-guidance/hooks/session-start.sh"
         hook.unlink()
-        hook.symlink_to(ROOT / "hooks/session-start.sh")
+        hook.symlink_to(ROOT / "plugins/session-guidance/hooks/session-start.sh")
     elif failure == "tampered-authored-resource":
-        asset = source / "source/skills/writing-plans/assets/task-brief.md"
+        asset = source / "plugins/common/skills/writing-plans/assets/task-brief.md"
         asset.write_text(asset.read_text() + "\nUnreviewed original asset change.\n")
     else:
         with (skill / "SKILL.md").open("a") as stream:
             stream.write("\nUnrecorded change.\n")
     if failure in {"unknown-link", "missing-resource"}:
-        manifest_path = source / "source/skill-sources.json"
+        manifest_path = source / "provenance/skill-sources.json"
         manifest = json.loads(manifest_path.read_text())
         authored = next(e for e in manifest["authored_skills"] if e["name"] == "nextjs-app-router")
-        authored["files"].append({"local": "skills/nextjs-app-router/new.md",
+        authored["files"].append({"local": "plugins/nextjs/skills/nextjs-app-router/new.md",
                                   "sha256": hashlib.sha256((skill / "new.md").read_bytes()).hexdigest()})
         manifest_path.write_text(json.dumps(manifest))
     output = tmp_path / "output"
@@ -386,12 +416,12 @@ def test_invalid_source_rejected_without_partial_output(tmp_path, failure):
     expected = {
         "unknown-link": "Undeclared outward resource",
         "missing-resource": "Missing or escaping resource",
-        "escaping-symlink": "not symlinks",
+        "escaping-symlink": "not be symlinks",
         "duplicate-owner": "duplicate skill owner",
         "tampered-source": "Source hash mismatch",
         "tampered-authored-resource": "Source hash mismatch",
         "unrecorded-source": "lacks source provenance",
-        "escaping-hook-symlink": "hook source is missing or escapes",
+        "escaping-hook-symlink": "not be symlinks",
     }
     with pytest.raises(ValueError, match=expected[failure]):
         builder().build(source, output)
@@ -422,7 +452,7 @@ def test_optional_hook_is_printf_only_and_path_with_spaces_works(tmp_path):
 
 def test_fenced_reference_examples_are_preserved_not_resolved(tmp_path):
     builder().build(ROOT, tmp_path)
-    source = ROOT / "source/skills/rust-best-practices/references/chapter_01.md"
+    source = ROOT / "plugins/rust/skills/rust-best-practices/references/chapter_01.md"
     payload = tmp_path / "plugins/rust/skills/rust-best-practices/references/chapter_01.md"
     example = "// This works as a caching alternative. See: [ADR-123](link/to/adr-123)"
     assert example in source.read_text() and example in payload.read_text()
@@ -433,7 +463,9 @@ def test_recorded_notice_is_retained_with_payload_provenance(tmp_path):
     builder().build(ROOT, tmp_path)
     plugin = tmp_path / "plugins/react-ui"
     notice = plugin / "licenses/impeccable-NOTICE.md"
-    canonical = ROOT / "source/licenses/impeccable-NOTICE.md"
+    ledger = json.loads((ROOT / "provenance/skill-sources.json").read_text())
+    canonical = ROOT / next(record["local"] for record in ledger["files"]
+                            if record["local"].endswith("/licenses/impeccable-NOTICE.md"))
     assert notice.is_file(), "Selected source NOTICE is recorded even when no skill links it"
     assert notice.read_bytes() == canonical.read_bytes()
     expected_hash = hashlib.sha256(canonical.read_bytes()).hexdigest()
@@ -475,12 +507,12 @@ def test_output_symlink_is_rejected_before_any_existing_bytes_change(tmp_path, m
     assert files(outside) == before_outside
 
 
-@pytest.mark.parametrize("linked", [".", "source", "hooks", "catalog.json", "LICENSE", "LICENSING.md"])
+@pytest.mark.parametrize("linked", [".", "plugins", "provenance", "provenance/skill-sources.json", "catalog.json", "LICENSE", "LICENSING.md"])
 def test_source_root_or_input_symlink_is_rejected(tmp_path, linked):
     source = tmp_path / "input"
     source.mkdir()
-    shutil.copytree(ROOT / "source", source / "source")
-    shutil.copytree(ROOT / "hooks", source / "hooks")
+    shutil.copytree(ROOT / "plugins", source / "plugins")
+    shutil.copytree(ROOT / "provenance", source / "provenance")
     shutil.copy(ROOT / "catalog.json", source / "catalog.json")
     for path in ("LICENSE", "LICENSING.md"):
         shutil.copy(ROOT / path, source / path)
@@ -494,7 +526,7 @@ def test_source_root_or_input_symlink_is_rejected(tmp_path, linked):
             shutil.rmtree(link)
         else:
             link.unlink()
-        link.symlink_to(ROOT / linked, target_is_directory=linked in {"source", "hooks"})
+        link.symlink_to(ROOT / linked, target_is_directory=linked in {"plugins", "provenance"})
     output = tmp_path / "output"
     output.mkdir()
     (output / "keep.txt").write_bytes(b"unchanged output")
@@ -530,7 +562,7 @@ def test_output_root_with_parent_traversal_is_rejected(tmp_path):
 
 
 def test_portable_roles_read_applicable_host_guidance():
-    for path in sorted((ROOT / 'source/agents').glob('*.toml')):
+    for path in sorted((ROOT / 'plugins/common/exports/codex/agents').glob('*.toml')):
         instructions = tomllib.loads(path.read_text())['developer_instructions']
         assert 'AGENTS.md' in instructions and 'CLAUDE.md' in instructions
         assert 'when present' in instructions
@@ -539,7 +571,7 @@ def test_portable_roles_read_applicable_host_guidance():
 def test_common_native_roles_have_model_free_claude_and_explicit_codex_exports(tmp_path):
     builder().build(ROOT, tmp_path)
     plugin = tmp_path / 'plugins/common'
-    for path in sorted((ROOT / 'source/agents').glob('*.toml')):
+    for path in sorted((ROOT / 'plugins/common/exports/codex/agents').glob('*.toml')):
         role = tomllib.loads(path.read_text())
         assert set(role) == {'name', 'description', 'developer_instructions'}
         assert (plugin / f'exports/codex/agents/{path.name}').read_bytes() == path.read_bytes()
@@ -552,8 +584,8 @@ def test_common_native_roles_have_model_free_claude_and_explicit_codex_exports(t
 
 def test_repeat_release_uses_catalog_version_everywhere(tmp_path):
     source = tmp_path / 'input'
-    shutil.copytree(ROOT / 'source', source / 'source')
-    shutil.copytree(ROOT / 'hooks', source / 'hooks')
+    shutil.copytree(ROOT / 'plugins', source / 'plugins')
+    shutil.copytree(ROOT / 'provenance', source / 'provenance')
     for path in ('LICENSE', 'LICENSING.md'):
         shutil.copy(ROOT / path, source / path)
     catalog = json.loads((ROOT / 'catalog.json').read_text())
@@ -571,7 +603,7 @@ def test_repeat_release_uses_catalog_version_everywhere(tmp_path):
 def test_python_type_examples_support_none_and_older_generic_aliases():
     import ast
     import re
-    skill = (ROOT / 'source/skills/python-type-safety/SKILL.md').read_text()
+    skill = (ROOT / 'plugins/python/skills/python-type-safety/SKILL.md').read_text()
     code = re.search(r'### Pattern 4: Generic Classes.*?```python\n(.*?)```', skill, re.S)[1]
     code = code.split('# Usage preserves types')[0]
     namespace = {}
@@ -586,7 +618,7 @@ def test_python_type_examples_support_none_and_older_generic_aliases():
     assert failed.is_failure and failed.unwrap_or('fallback') == 'fallback'
     with pytest.raises(RuntimeError, match='failure'):
         failed.unwrap()
-    details = (ROOT / 'source/skills/python-type-safety/references/details.md').read_text()
+    details = (ROOT / 'plugins/python/skills/python-type-safety/references/details.md').read_text()
     block = re.search(r'# Python 3.10-3.11 style.*?\n(.*?)```', details, re.S)[1]
     ast.parse(block, feature_version=(3, 10))
     namespace = {'Request': str}
@@ -626,20 +658,20 @@ def test_common_forms_are_closed_authored_assets_without_consumer_template_depen
     for path in plugin.rglob("*.md"):
         assert ".agents/templates/" not in path.read_text(), f"Generic asset still assumes consumer form copies: {path}"
     assert (plugin / "skills/domain-modeling/ADR-FORMAT.md").read_bytes() == (
-        ROOT / "source/skills/domain-modeling/ADR-FORMAT.md"
+        ROOT / "plugins/common/skills/domain-modeling/ADR-FORMAT.md"
     ).read_bytes()
     assert not (ROOT / "source/templates").exists()
     builder().validate_links(plugin)
 
 
 def set_reviewed_skill_frontmatter(source, replacement):
-    relative = "skills/nextjs-app-router/SKILL.md"
-    path = source / "source" / relative
+    relative = "plugins/nextjs/skills/nextjs-app-router/SKILL.md"
+    path = source / relative
     old = path.read_text()
     header, _, body = old[4:].partition("\n---\n")
     assert header and body
     path.write_text(replacement + body)
-    manifest_path = source / "source/skill-sources.json"
+    manifest_path = source / "provenance/skill-sources.json"
     manifest = json.loads(manifest_path.read_text())
     records = manifest["files"] + [f for item in manifest["authored_skills"] + manifest.get("authored_resources", []) for f in item["files"]]
     record = next(item for item in records if item["local"] == relative)
@@ -682,12 +714,12 @@ def test_skill_frontmatter_accepts_existing_description_forms(source_repo, descr
     builder().render(source_repo)
 
 
-@pytest.mark.parametrize("relative", ["plugins", ".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json"])
+@pytest.mark.parametrize("relative", ["plugins/common/plugin.json", ".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json"])
 def test_replace_failure_restores_plugins_and_both_marketplaces(tmp_path, monkeypatch, relative):
     module = builder()
     output = tmp_path / "output"
     module.build(ROOT, output)
-    for path in ("plugins/common/sentinel", ".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json"):
+    for path in ("plugins/common/plugin.json", ".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json"):
         (output / path).write_text("original " + path)
     before = files(output)
     real_replace = module.os.replace
@@ -711,12 +743,13 @@ def test_staging_copy_failure_preserves_existing_outputs(tmp_path, monkeypatch):
     module = builder()
     output = tmp_path / "output"
     module.build(ROOT, output)
+    (output / "plugins/common/plugin.json").write_text("existing generated metadata")
     before = files(output)
 
     def fail_copy(*args, **kwargs):
         raise OSError("injected staging copy failure")
 
-    monkeypatch.setattr(module.shutil, "copytree", fail_copy)
+    monkeypatch.setattr(module.shutil, "copyfile", fail_copy)
     with pytest.raises(OSError, match="injected staging copy failure"):
         module.build(ROOT, output)
     assert files(output) == before
@@ -726,12 +759,12 @@ def test_rollback_failure_retains_recovery_files(tmp_path, monkeypatch):
     module = builder()
     output = tmp_path / "output"
     module.build(ROOT, output)
-    sentinel = output / "plugins/common/sentinel"
+    sentinel = output / "plugins/common/plugin.json"
     sentinel.write_text("original content")
     real_replace = module.os.replace
 
     def fail_install_and_restore(src, dst):
-        if Path(dst) == output / "plugins":
+        if Path(dst) == output / "plugins/common/plugin.json":
             raise OSError("injected installation and rollback failure")
         return real_replace(src, dst)
 
@@ -740,7 +773,7 @@ def test_rollback_failure_retains_recovery_files(tmp_path, monkeypatch):
         module.build(ROOT, output)
     recovery = list(output.glob(".agent-skills-build-*"))
     assert len(recovery) == 1
-    assert (recovery[0] / "backup/plugins/common/sentinel").read_text() == "original content"
+    assert (recovery[0] / "backup/plugins/common/plugin.json").read_text() == "original content"
 
 
 @pytest.mark.parametrize("header", [
@@ -776,7 +809,7 @@ def read_skill_frontmatter(path):
     return yaml.safe_load("\n".join(lines[1:end]))
 
 
-@pytest.mark.parametrize("path", sorted((ROOT / "source/skills").glob("*/SKILL.md")), ids=lambda path: path.parent.name)
+@pytest.mark.parametrize("path", sorted((ROOT / "plugins").glob("*/skills/*/SKILL.md")), ids=lambda path: path.parent.name)
 def test_source_skill_frontmatter_is_valid_yaml_with_required_strings(path):
     frontmatter = read_skill_frontmatter(path)
     assert isinstance(frontmatter, dict)
@@ -791,3 +824,114 @@ def test_full_yaml_validation_rejects_malformed_optional_metadata(tmp_path):
     skill.write_text("---\nname: example\ndescription: Useful\nmetadata: [unclosed\n---\n")
     with pytest.raises(yaml.YAMLError):
         read_skill_frontmatter(skill)
+
+
+def test_preparation_keeps_canonical_bytes_mtime_and_inode(source_repo):
+    module = builder()
+    manifest = json.loads((source_repo / "provenance/skill-sources.json").read_text())
+    canonical = [source_repo / record["local"] for record in module.canonical_records(manifest)]
+    before = {path: (path.read_bytes(), path.stat().st_mtime_ns, path.stat().st_ino) for path in canonical}
+    (source_repo / "plugins/common/plugin.json").write_text("stale generated metadata")
+    module.build(source_repo, source_repo)
+    module.build(source_repo, source_repo, check=True)
+    assert {path: (path.read_bytes(), path.stat().st_mtime_ns, path.stat().st_ino) for path in canonical} == before
+
+
+@pytest.mark.parametrize("direction", ["child", "parent"])
+def test_overlapping_output_is_rejected_without_changes(source_repo, direction):
+    output = source_repo / "nested" if direction == "child" else source_repo.parent
+    before = files(source_repo)
+    with pytest.raises(ValueError, match="overlap"):
+        builder().build(source_repo, output)
+    assert files(source_repo) == before
+
+
+@pytest.mark.parametrize("failure", ["duplicate-resource", "duplicate-record", "unknown-source", "missing-license", "wrong-owner", "unreviewed-legal"])
+def test_invalid_v2_ownership_is_rejected_without_changes(source_repo, tmp_path, failure):
+    ledger = source_repo / "provenance/skill-sources.json"
+    manifest = json.loads(ledger.read_text())
+    records = builder().canonical_records(manifest)
+    if failure == "duplicate-resource":
+        record = next(item for item in records if "/references/engineering.md" in item["local"])
+        other = "plugins/python/references/engineering.md"
+        path = source_repo / other
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes((source_repo / record["local"]).read_bytes())
+        manifest["authored_resources"].append({"origin": "test fixture", "files": [{**record, "local": other}]})
+    elif failure == "duplicate-record":
+        manifest["files"].append(manifest["files"][0].copy())
+    elif failure == "unknown-source":
+        manifest["files"][0]["source_id"] = "unknown-source"
+    elif failure == "missing-license":
+        manifest["sources"][0]["license"] = "plugins/common/licenses/missing.txt"
+    elif failure == "wrong-owner":
+        record = next(item for item in records if "/skills/nextjs-app-router/SKILL.md" in item["local"])
+        record["local"] = record["local"].replace("plugins/nextjs/", "plugins/common/")
+    else:
+        for entry in manifest["authored_resources"]:
+            entry["files"] = [record for record in entry["files"] if record["local"] != "LICENSE"]
+    ledger.write_text(json.dumps(manifest))
+    output = tmp_path / "output"
+    before = files(source_repo)
+    with pytest.raises(ValueError):
+        builder().build(source_repo, output)
+    assert files(source_repo) == before
+    assert not output.exists()
+
+
+def test_destination_reference_is_repaired_from_registered_owner(source_repo):
+    module = builder()
+    ledger = json.loads((source_repo / "provenance/skill-sources.json").read_text())
+    owner = next(record["local"] for record in module.canonical_records(ledger)
+                 if record["local"].endswith("/references/engineering.md"))
+    rendered = module.render(source_repo)
+    destination = next(relative for relative in rendered if relative.endswith("/references/engineering.md") and relative != owner)
+    target = source_repo / destination
+    target.write_bytes(b"stale destination copy")
+    module.build(source_repo, source_repo)
+    assert target.read_bytes() == rendered[destination]
+    assert target.read_bytes() != b"stale destination copy"
+
+
+def test_yaml_inventory_is_not_empty():
+    catalog = json.loads((ROOT / "catalog.json").read_text())
+    assert len(list((ROOT / "plugins").glob("*/skills/*/SKILL.md"))) == sum(len(plugin["skills"]) for plugin in catalog["plugins"]) == 39
+
+
+def test_in_place_transaction_rollback_never_moves_canonical_inputs(source_repo, monkeypatch):
+    module = builder()
+    manifest = json.loads((source_repo / "provenance/skill-sources.json").read_text())
+    canonical = {source_repo / record["local"] for record in module.canonical_records(manifest)}
+    before_canonical = {path: (path.read_bytes(), path.stat().st_mtime_ns, path.stat().st_ino) for path in canonical}
+    relative = "plugins/common/plugin.json"
+    (source_repo / relative).write_bytes(b"stale generated metadata")
+    before = files(source_repo)
+    real_replace = module.os.replace
+    failed = False
+
+    def fail_install(src, dst):
+        nonlocal failed
+        assert Path(src) not in canonical and Path(dst) not in canonical
+        if not failed and Path(dst) == source_repo / relative and "/backup/" not in str(src):
+            failed = True
+            raise OSError("injected generated-file failure")
+        return real_replace(src, dst)
+
+    monkeypatch.setattr(module.os, "replace", fail_install)
+    with pytest.raises(OSError, match="injected generated-file failure"):
+        module.build(source_repo, source_repo)
+    assert failed
+    assert files(source_repo) == before
+    assert {path: (path.read_bytes(), path.stat().st_mtime_ns, path.stat().st_ino) for path in canonical} == before_canonical
+
+
+@pytest.mark.parametrize("relative", ["plugins/common/local-notes.md", "plugins/unknown/keep.txt"])
+def test_disjoint_output_unknown_files_are_never_deleted(tmp_path, relative):
+    output = tmp_path / "output"
+    target = output / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(b"unregistered local work")
+    before = files(output)
+    with pytest.raises(ValueError, match="Unknown plugin/output files"):
+        builder().build(ROOT, output)
+    assert files(output) == before

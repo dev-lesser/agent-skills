@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "marketplace": "dev-lesser-agent-skills",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": "https://github.com/dev-lesser/agent-skills.git",
   "publication_status": "Public Git repository; original authored material is scoped MIT; third-party terms and notices apply.",
   "plugins": [
@@ -59,7 +59,8 @@
         "vercel-composition-patterns",
         "frontend-design",
         "impeccable",
-        "web-design-guidelines"
+        "web-design-guidelines",
+        "ui-ux-pro-max"
       ],
       "requires": [
         "typescript"

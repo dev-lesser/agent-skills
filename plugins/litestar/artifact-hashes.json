@@ -2,13 +2,13 @@
   "schema_version": 1,
   "algorithm": "sha256",
   "files": {
-    ".claude-plugin/plugin.json": "cf3fb870777f7c863887e3f7175afa275b0bf20b337f5abf7996c576d151f38f",
+    ".claude-plugin/plugin.json": "baadc1bd16a48200a70d6f772b55885b0a8d68f1860a18dee2263dbcc43f5a52",
     "DEPENDENCIES.md": "855c2c79fc296021be56773f9fb560ab0e27b38c1943148dd45b9e0743cabf40",
     "LICENSE": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
-    "LICENSING.md": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+    "LICENSING.md": "00931e277f576dbc2ecf3a6e01e75b2c0d5837b5dfeb3b941d620f2d083be96f",
     "THIRD-PARTY-NOTICES.md": "a7749f9ef7ac0f8c1faa5459283213eaa3117987e3364bd76ffe0822694bd0c1",
-    "plugin.json": "e227e0990fd24e983b8f5883ee3db6cee6d6a9678b053847d04640789d354e7a",
-    "provenance.json": "4b9b460180fa31a6978cfa5685351342fc69ac4ef72be351b6391cb437bfd238",
+    "plugin.json": "6728e4fb16ba3e68c320fbacb84875e55627830a1bd270fc88afbce6c8d59a34",
+    "provenance.json": "76fa78e4925959b66251c06d504e6747be5e798dd7f9b34064557cd21e403b3d",
     "skills/litestar-backend/SKILL.md": "cc757d4f4800b47595c38d1cefc3d5c689af6a702460055f540d5c910f4f9d68"
   }
 }

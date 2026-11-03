@@ -1,6 +1,6 @@
 {
   "name": "session-guidance",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Optional advisory-only SessionStart reminder; requires separate hook trust",
   "author": {
     "name": "Jongmoon Choi"

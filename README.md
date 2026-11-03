@@ -1,9 +1,9 @@
-# Agent Skills
+# DevLesserAgentSkills
 
 One versioned source for reusable engineering skills and **optional** advisory hooks. Language and
 framework bundles are folders in this repository, not separate repositories and not one repository per combination.
 
-This personal repository contains generated plugin bundles, their canonical skill sources, tooling, and provenance.
+This personal repository contains plugin-owned canonical skills, prepared installable bundles, tooling, and provenance.
 It excludes robotics and firmware bundles. Imported material retains its recorded source revisions and individual notices;
 historical upstream releases and evaluations are not evidence for this repository.
 
@@ -56,31 +56,35 @@ registration, installation and refresh. A host refresh does not remove or overwr
 ## Structure
 
 ```text
-catalog.json                       # One bundle owner per skill; version and composition metadata
-source/skills/                     # Canonical complete procedures and resources; edit these
-source/skill-sources.json          # Immutable upstream/source provenance and local source hashes
-source/licenses/                   # Imported license evidence
-source/references/                 # Canonical shared engineering/methodology/worked references
-source/agents/*.toml               # Canonical model-free generic roles
-hooks/session-start.sh             # Canonical optional printf-only advisory
-scripts/build_plugins.py           # Standard-library deterministic builder and --check
-plugins/<bundle>/                  # Generated, closed installed payloads; do not hand-edit
-.agents/plugins/marketplace.json   # Generated Codex marketplace adapter
-.claude-plugin/marketplace.json    # Generated Claude marketplace adapter
+catalog.json                       # Stable bundle/skill ownership, release version and composition
+plugins/<bundle>/skills/<skill>/   # Canonical complete procedures/resources; edit these
+provenance/skill-sources.json      # v2 ledger: root-relative canonical owners, pins and reviewed hashes
+plugins/<owner>/references/       # Canonical shared references; other bundle copies are generated
+plugins/<owner>/licenses/         # Canonical imported notices; other bundle copies are generated
+plugins/common/exports/codex/agents/*.toml # Four canonical model-free generic roles
+plugins/common/agents/*.md         # Generated Claude role adapters
+plugins/session-guidance/hooks/session-start.sh # Canonical opt-in printf-only advisory
+LICENSE, LICENSING.md              # Canonical legal policy; plugin-root copies are generated
+scripts/build_plugins.py           # Stdlib release preparation and --check; never consumer installation
+.agents/plugins/marketplace.json   # Generated Codex marketplace index
+.claude-plugin/marketplace.json    # Generated Claude marketplace index
 ```
 
-`source/skills/` holds the maintained skill source, not a host skill-discovery directory. The root `.agents/plugins/`
-contains the Codex marketplace index, while each generated `plugins/<bundle>/` is a separate installable package
-with its own root `plugin.json` and `skills/`. Project-local `.agents/skills/` is a separate discovery mechanism,
-not a required copy of the shared skills. Each plugin's root `plugin.json` is the portable format; a `.codex-plugin/plugin.json`
-is an optional Codex compatibility manifest rather than a required second source.
+Each `plugins/<bundle>/` is both its canonical authoring home and a closed installable package. Its generated
+metadata, role adapters and destination reference/license copies are not separately maintained sources. Use the
+ledger to find a shared resource's owner before editing. The retired `source/` tree and root hook mirror are absent.
+The root `.agents/plugins/` is the marketplace index; project-local `.agents/skills/` is a separate host discovery
+mechanism, not a required shared-skill copy. Each plugin's root `plugin.json` is the portable format, with a generated
+`.claude-plugin/plugin.json` adapter.
 
-Generated payloads are intended Git-managed release artifacts, not a second hand-maintained library. The builder preserves full
-procedure bodies and resources, rewrites only declared location-dependent links, retains licenses, and records
-upstream/source/payload hashes separately. Unknown outward references fail rather than silently disappearing.
-Imported skill files retain their reviewed content; authored skills use consuming-project conventions. Imported
-procedures and shared references may still contain specific paths or assumptions, so review them against the actual
-project. Static checks do not guarantee skill discovery, invocation or model adherence.
+Preparation preserves complete canonical procedure bytes, resolves declared shared resources from their owners,
+rewrites only destination-copy links and prepares generated metadata. It validates frontmatter, reviewed hashes,
+local resource closure and managed paths; unknown outward references fail rather than disappearing. It never
+replaces the whole plugin tree or approves a changed canonical hash. The builder updates changed generated files
+with rollback on a caught failure; this is not a crash-atomic release. See [provenance](docs/provenance.md).
+
+Imported procedures and shared references may retain specific examples or assumptions. Review them against the
+actual consuming project. Static checks do not establish discovery, invocation, adherence or UI effectiveness.
 
 ## Choose a project, not a list of skills
 
@@ -107,14 +111,17 @@ project package routing chooses the relevant instructions for the actual task. S
 this is not a per-directory model sandbox. Common principles may use another language as an example without adopting
 that language, runtime or dependency.
 
-There are **11 bundles and 38 skills**. `session-guidance` has no skills and is never selected automatically.
+There are **11 bundles and 39 skills**. `session-guidance` has no skills and is never selected automatically.
 Monorepo change guidance lives in Common; Rust async guidance lives in Rust. These are task conditions, not more setup options.
-The consumer project owns its project-specific setup and decisions.
+React UI contains six skills, including `ui-ux-pro-max` for scoped local design-data search. Use focused searches for
+polish within an existing design; request a new design system only when the task calls for one. Preserve project
+behavior, design tokens and framework versions. See [frontend workflows](docs/frontend-workflows.md) for execution,
+persistence and React-version limits. The consumer project owns its setup and decisions.
 
 ## Shared methods, project-local contracts
 
-Full development and architecture references live under `source/references/`, reached from common procedures. They retain worked cases and decision criteria, not replacement summaries. Source-first
-investigation, TDD/SDD and selective DDD are shared procedures; generated product docs retain real structure/specs/ADRs
+Full development and architecture references live under `plugins/common/references/`, reached from Common procedures.
+They retain worked cases and decision criteria, not replacement summaries. Source-first investigation, TDD/SDD and selective DDD are shared procedures; consuming-project docs retain real structure/specs/ADRs
 and local authority, not another methodology manual. Monorepos and single packages retain their own native layout
 and package boundaries rather than adopting a required folder tree from this repository.
 
@@ -132,7 +139,7 @@ checks. Versions are host-managed, not independent per-repository locks.
 
 Each bundle has a portable root `plugin.json` for Codex and a `.claude-plugin/plugin.json` adapter. Common also exports
 Claude's native `agents/*.md` from the canonical role TOMLs. Codex currently does **not** register agents from plugins:
-its generated `exports/codex/agents/*.toml` are explicit optional provisioning artifacts, not auto-loaded roles.
+its canonical `exports/codex/agents/*.toml` are explicit optional provisioning artifacts, not auto-loaded roles.
 Use built-in Codex agents by default; project-specific specialization belongs at native `.codex/agents/*.toml`.
 Generic role bodies have one canonical source here. See [host support](docs/hosts.md).
 
@@ -145,8 +152,11 @@ uv run --locked python scripts/build_plugins.py --check
 uv run --locked pytest
 ```
 
-The builder has no runtime dependencies. Python and pytest are maintainer tools only; a Next.js consumer does not
-need Python to use the skills or the optional shell hook. Do not run product applications or hardware to validate prose.
+The builder uses only the standard library; Python and pytest support maintainer checks. Plugin installation uses
+prepared files and does not invoke the provider builder. Most skills and the optional shell advisory need no Python.
+`react-ui:ui-ux-pro-max` optionally uses an already available Python 3.9+ interpreter for local, stdlib-only data search;
+missing Python is a reported limitation, not permission to install it. No search runtime, browser or application
+execution is required for Markdown-only work. Do not run product applications or hardware to validate prose.
 
 The [MIT License](LICENSE) covers original material authored and owned by Jongmoon Choi only. Imported material
 retains its own licenses and notices; see [licensing and provenance](LICENSING.md) before reuse. A new release still

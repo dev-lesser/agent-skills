@@ -18,6 +18,9 @@ On working product surfaces, precision and restraint often show more craft than 
 
 ## Scope and context
 
+For visual polish, redesign or UX/accessibility decisions, also consult [UI UX Pro Max](../ui-ux-pro-max/SKILL.md)
+using a focused applicable search or reference. Its recommendations remain subordinate to the existing product system.
+
 1. Read applicable project guidance and `DESIGN.md` before visual work. Inspect the current target, tokens,
    shared components and neighboring flows. Use existing product/brief evidence; do not invent missing audience,
    claims or features, and do not create or overwrite product/design documents as setup.

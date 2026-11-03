@@ -2,13 +2,13 @@
   "schema_version": 1,
   "algorithm": "sha256",
   "files": {
-    ".claude-plugin/plugin.json": "78036e1a4a79f992f9eb4d48de214219f6d240946e226c63df2fbdcf7a5903f4",
+    ".claude-plugin/plugin.json": "9575ceaf5182999b677782e1156a5d5bda65c438adb87e80e8822febf8d45a5e",
     "DEPENDENCIES.md": "97c3def40b02faf2fda0c38af8f359cfe6f6b910a1e8060f8424488e488e479f",
     "LICENSE": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
-    "LICENSING.md": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+    "LICENSING.md": "00931e277f576dbc2ecf3a6e01e75b2c0d5837b5dfeb3b941d620f2d083be96f",
     "THIRD-PARTY-NOTICES.md": "ab9a14519dbf0f522d165997a63b80297944fe43f382f4e3164f5122ad86e71c",
-    "plugin.json": "842ee6527275515e89ede6cd0e828b4480dc5e8e4ab0fe308b2c68611ccf46b4",
-    "provenance.json": "bcbda9c239816cd5a9a2d31578130d0fc70aa053a1cd3b2be33ea4034450a0cd",
+    "plugin.json": "7afdc7fcf3062639e17919b5b831cc6b15ec373abbd576a9ce2843b00c86a64a",
+    "provenance.json": "a263ffad41df57df7f2167aefdd706843a0eab56f632c4b1eca5fbbfcf225400",
     "skills/nextjs-app-router/SKILL.md": "7d4741ddf37b63ffc02c3a08e22b53540b5f70c7066f131a85ac7bd430f15355"
   }
 }

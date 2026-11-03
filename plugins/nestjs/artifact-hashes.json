@@ -2,13 +2,13 @@
   "schema_version": 1,
   "algorithm": "sha256",
   "files": {
-    ".claude-plugin/plugin.json": "29685ed3aff8b2f44f9c662f4e3e84775faab79485a51cb30cc62e81d643bd3a",
+    ".claude-plugin/plugin.json": "3478fd9574470f94bf1f590291b5e884e99514865b77507f949240ad4e7be53e",
     "DEPENDENCIES.md": "89491b06121d68555daf911c10aa337e90b0ae7411b3270275e3e84ee7acbc33",
     "LICENSE": "ad66428fc4d3c3f1fc821999c09c8d82339ba154551bf08de7031c39273f11a4",
-    "LICENSING.md": "9ffa67a5868d6757edc252e8030090f5cb2694db8913ddcb7f2b0ef225f1522e",
+    "LICENSING.md": "00931e277f576dbc2ecf3a6e01e75b2c0d5837b5dfeb3b941d620f2d083be96f",
     "THIRD-PARTY-NOTICES.md": "06ffa748ca4c20b94be462e8e59ac7a1b9c0de3da524e2551089e4f3c17fe4cf",
-    "plugin.json": "df2adff0fce1aa66ac692e2a43efbb6c7bfd23bbb5ec0d28e3c2b94fc93caf55",
-    "provenance.json": "df5962595ee24e2801c31936c1b6c02269121a4cce134d5c7f72166ed880de58",
+    "plugin.json": "487fc9033b2a434f59dbb7ba7e4bef7f56e2fe9c5b1a9cf2eb784cf4c8c6ddbb",
+    "provenance.json": "d69c7b30b6bce8ffe8852d75011c9090b53d28b171229994f6b78c171699a2e6",
     "skills/nestjs-backend/SKILL.md": "fc7a26720c1a571333fea233de04aad9240c0eec9b310e854758b7b73f109b30"
   }
 }
